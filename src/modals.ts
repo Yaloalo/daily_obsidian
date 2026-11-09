@@ -419,9 +419,9 @@ export class RoutineCardModal extends Modal {
 			return;
 		}
 
-		const sortedDays = Array.from(this.selectedDays).sort(
+		const sortedDays: DayIndex[] = Array.from(this.selectedDays).sort(
 			(a, b) => a - b
-		) as DayIndex[];
+		);
 
 		let resolvedStart = "";
 		let resolvedEnd = "";

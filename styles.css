@@ -184,8 +184,10 @@
 	width: 24px;
 }
 
-/* Weekly Board Grid — uses subgrid so "Overall in the day" and "Timed schedule"
-   align horizontally at the exact same vertical height across all 7 day columns */
+/* Weekly Board Grid — each day column uses `display: contents`, so its header,
+   "Overall in the day" and "Timed schedule" cells become direct grid items of
+   one shared 3-row grid. That keeps all sections aligned horizontally across
+   all 7 days, and the column look is drawn on the cells themselves. */
 .wrp-board {
 	display: grid;
 	grid-auto-flow: column;
@@ -206,20 +208,15 @@
 
 /* Day Column */
 .wrp-day-column {
-	display: grid;
-	grid-row: 1 / -1;
-	grid-template-rows: subgrid;
-	background-color: var(--background-secondary);
-	border: 1px solid var(--background-modifier-border);
-	border-radius: 10px;
-	min-height: 360px;
-	overflow: hidden;
-	transition: border-color 0.15s ease;
+	display: contents;
 }
 
-.wrp-day-column.is-today {
-	border-color: var(--interactive-accent);
-	box-shadow: 0 0 0 1px var(--interactive-accent);
+.wrp-day-header,
+.wrp-day-section {
+	background-color: var(--background-secondary);
+	border-left: 1px solid var(--background-modifier-border);
+	border-right: 1px solid var(--background-modifier-border);
+	transition: border-color 0.15s ease, background-color 0.12s ease;
 }
 
 .wrp-day-header {
@@ -228,7 +225,23 @@
 	justify-content: space-between;
 	padding: 10px 12px;
 	background-color: var(--background-secondary-alt);
+	border-top: 1px solid var(--background-modifier-border);
 	border-bottom: 1px solid var(--background-modifier-border);
+	border-radius: 10px 10px 0 0;
+}
+
+.wrp-day-column.is-today > .wrp-day-header,
+.wrp-day-column.is-today > .wrp-day-section {
+	border-left-color: var(--interactive-accent);
+	border-right-color: var(--interactive-accent);
+}
+
+.wrp-day-column.is-today > .wrp-day-header {
+	border-top-color: var(--interactive-accent);
+}
+
+.wrp-day-column.is-today > .wrp-section-timed {
+	border-bottom-color: var(--interactive-accent);
 }
 
 .wrp-day-header-left {
@@ -266,7 +279,6 @@
 	flex-direction: column;
 	padding: 10px;
 	gap: 8px;
-	transition: background-color 0.12s ease;
 }
 
 .wrp-section-untimed {
@@ -276,7 +288,9 @@
 
 .wrp-section-timed {
 	flex: 1;
-	min-height: 160px;
+	min-height: 200px;
+	border-bottom: 1px solid var(--background-modifier-border);
+	border-radius: 0 0 10px 10px;
 }
 
 .wrp-day-section.is-drag-over {
@@ -491,8 +505,8 @@
 	opacity: 0.85;
 }
 
-.wrp-card-action-btn:hover {
-	opacity: 1 !important;
+.wrp-card:hover .wrp-card-action-btn:hover {
+	opacity: 1;
 }
 
 .wrp-card-title {
@@ -783,8 +797,30 @@
 	.wrp-day-column {
 		display: flex;
 		flex-direction: column;
-		min-height: auto;
 		flex-shrink: 0;
+		background-color: var(--background-secondary);
+		border: 1px solid var(--background-modifier-border);
+		border-radius: 10px;
+		overflow: hidden;
+	}
+
+	.wrp-day-column.is-today {
+		border-color: var(--interactive-accent);
+	}
+
+	.wrp-day-column > .wrp-day-header,
+	.wrp-day-column > .wrp-day-section {
+		border-left: none;
+		border-right: none;
+		border-radius: 0;
+	}
+
+	.wrp-day-column > .wrp-day-header {
+		border-top: none;
+	}
+
+	.wrp-day-column > .wrp-section-timed {
+		border-bottom: none;
 	}
 
 	.wrp-section-untimed,

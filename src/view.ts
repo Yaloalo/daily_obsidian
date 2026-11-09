@@ -666,7 +666,7 @@ export class WeeklyPlannerView extends ItemView {
 		}
 		updatedDays.add(targetDay);
 
-		card.days = Array.from(updatedDays).sort((a, b) => a - b) as DayIndex[];
+		card.days = Array.from(updatedDays).sort((a, b) => a - b);
 		card.isTimed = targetTimed;
 		if (targetTimed && !card.startTime) {
 			card.startTime = "07:00";
