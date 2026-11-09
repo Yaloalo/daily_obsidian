@@ -1,0 +1,20 @@
+# Obsidian
+.obsidian
+
+# Build output (attached to GitHub releases instead of source control)
+main.js
+*.js.map
+
+# Dependencies
+node_modules/
+
+# macOS / Linux / Editor artifacts
+.DS_Store
+*.swp
+*~
+.vscode/
+.idea/
+
+# Environment
+.env
+.env.*

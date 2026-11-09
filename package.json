@@ -1,0 +1,28 @@
+{
+	"name": "weekly-routine-board",
+	"version": "1.0.0",
+	"description": "Plan and view recurring weekly tasks and routines across all seven days with untimed day cards and timed schedule slots.",
+	"main": "main.js",
+	"scripts": {
+		"dev": "node esbuild.config.mjs",
+		"build": "tsc -noEmit -skipLibCheck && node esbuild.config.mjs production",
+		"version": "node version-bump.mjs && git add manifest.json versions.json"
+	},
+	"keywords": [
+		"obsidian",
+		"obsidian-plugin",
+		"weekly-planner",
+		"routine",
+		"schedule"
+	],
+	"author": "Lennart Friebel",
+	"license": "MIT",
+	"devDependencies": {
+		"@types/node": "^20.11.0",
+		"builtin-modules": "^3.3.0",
+		"esbuild": "0.21.5",
+		"obsidian": "latest",
+		"tslib": "2.6.2",
+		"typescript": "5.4.5"
+	}
+}

@@ -1,0 +1,10 @@
+{
+	"id": "weekly-routine-board",
+	"name": "Weekly Routine Board",
+	"version": "1.0.0",
+	"minAppVersion": "1.5.0",
+	"description": "Plan and view recurring weekly tasks and routines across all seven days with untimed day cards and timed schedule slots.",
+	"author": "Lennart Friebel",
+	"authorUrl": "https://github.com/Yaloalo",
+	"isDesktopOnly": false
+}

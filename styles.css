@@ -1,0 +1,827 @@
+/* Weekly Routine Planner Styles */
+
+.wrp-view-container {
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+	padding: 16px;
+	box-sizing: border-box;
+	overflow: hidden;
+	background-color: var(--background-primary);
+}
+
+/* Toolbar */
+.wrp-toolbar {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+	padding-bottom: 14px;
+	margin-bottom: 14px;
+	border-bottom: 1px solid var(--background-modifier-border);
+	flex-wrap: wrap;
+}
+
+.wrp-toolbar-title-group {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+}
+
+.wrp-toolbar-icon {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 34px;
+	height: 34px;
+	border-radius: 8px;
+	background-color: var(--background-secondary);
+	color: var(--interactive-accent);
+}
+
+.wrp-title {
+	margin: 0;
+	font-size: 1.15rem;
+	font-weight: 650;
+	line-height: 1.2;
+}
+
+.wrp-subtitle {
+	font-size: 0.78rem;
+	color: var(--text-muted);
+	margin-top: 2px;
+}
+
+.wrp-toolbar-controls {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	flex-wrap: wrap;
+}
+
+.wrp-filter-bar {
+	display: flex;
+	align-items: center;
+	gap: 4px;
+	background-color: var(--background-secondary);
+	padding: 3px;
+	border-radius: 8px;
+	border: 1px solid var(--background-modifier-border);
+}
+
+.wrp-filter-pill {
+	background: transparent;
+	border: none;
+	box-shadow: none;
+	padding: 4px 10px;
+	font-size: 0.8rem;
+	border-radius: 6px;
+	cursor: pointer;
+	color: var(--text-muted);
+}
+
+.wrp-filter-pill:hover {
+	color: var(--text-normal);
+	background-color: var(--background-modifier-hover);
+}
+
+.wrp-filter-pill.is-active {
+	background-color: var(--interactive-accent);
+	color: var(--text-on-accent);
+	font-weight: 600;
+}
+
+.wrp-add-main-btn {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	cursor: pointer;
+}
+
+.wrp-btn-icon {
+	display: inline-flex;
+	align-items: center;
+}
+
+/* 7-Day Quick-Switcher Strip (Mobile & Focused Day Mode) */
+.wrp-day-strip {
+	display: none;
+	grid-template-columns: repeat(auto-fit, minmax(42px, 1fr));
+	gap: 6px;
+	margin-bottom: 12px;
+	padding: 4px;
+	background-color: var(--background-secondary);
+	border: 1px solid var(--background-modifier-border);
+	border-radius: 10px;
+}
+
+.wrp-day-strip.is-visible,
+.wrp-is-mobile .wrp-day-strip {
+	display: grid;
+}
+
+.wrp-day-strip-tab {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: 3px;
+	padding: 6px 4px;
+	height: auto;
+	border-radius: 7px;
+	border: 1px solid transparent;
+	background: transparent;
+	box-shadow: none;
+	cursor: pointer;
+	color: var(--text-muted);
+	transition: background-color 0.12s ease, color 0.12s ease;
+}
+
+.wrp-day-strip-tab:hover {
+	background-color: var(--background-modifier-hover);
+	color: var(--text-normal);
+}
+
+.wrp-day-strip-tab.is-today {
+	border-color: var(--interactive-accent);
+	color: var(--text-normal);
+}
+
+.wrp-day-strip-tab.is-selected {
+	background-color: var(--interactive-accent);
+	color: var(--text-on-accent);
+	border-color: var(--interactive-accent);
+}
+
+.wrp-day-strip-name {
+	font-size: 0.76rem;
+	font-weight: 650;
+	line-height: 1.1;
+}
+
+.wrp-day-strip-count {
+	font-size: 0.66rem;
+	font-weight: 600;
+	padding: 1px 5px;
+	border-radius: 999px;
+	background-color: var(--background-primary);
+	color: var(--text-faint);
+	line-height: 1.2;
+}
+
+.wrp-day-strip-count.has-cards {
+	color: var(--text-normal);
+}
+
+.wrp-day-strip-tab.is-selected .wrp-day-strip-count {
+	background-color: rgba(0, 0, 0, 0.22);
+	color: var(--text-on-accent);
+}
+
+.wrp-day-nav-btn {
+	padding: 2px;
+	height: 24px;
+	width: 24px;
+}
+
+/* Weekly Board Grid — uses subgrid so "Overall in the day" and "Timed schedule"
+   align horizontally at the exact same vertical height across all 7 day columns */
+.wrp-board {
+	display: grid;
+	grid-auto-flow: column;
+	grid-auto-columns: minmax(190px, 1fr);
+	grid-template-rows: auto auto 1fr;
+	gap: 0 12px;
+	flex: 1;
+	overflow-x: auto;
+	overflow-y: auto;
+	padding-bottom: 8px;
+	align-items: stretch;
+}
+
+.wrp-board.wrp-board-single {
+	grid-auto-columns: minmax(280px, 680px);
+	justify-content: center;
+}
+
+/* Day Column */
+.wrp-day-column {
+	display: grid;
+	grid-row: 1 / -1;
+	grid-template-rows: subgrid;
+	background-color: var(--background-secondary);
+	border: 1px solid var(--background-modifier-border);
+	border-radius: 10px;
+	min-height: 360px;
+	overflow: hidden;
+	transition: border-color 0.15s ease;
+}
+
+.wrp-day-column.is-today {
+	border-color: var(--interactive-accent);
+	box-shadow: 0 0 0 1px var(--interactive-accent);
+}
+
+.wrp-day-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 10px 12px;
+	background-color: var(--background-secondary-alt);
+	border-bottom: 1px solid var(--background-modifier-border);
+}
+
+.wrp-day-header-left {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.wrp-day-name {
+	font-weight: 650;
+	font-size: 0.95rem;
+	color: var(--text-normal);
+}
+
+.wrp-today-badge {
+	font-size: 0.68rem;
+	font-weight: 600;
+	text-transform: uppercase;
+	letter-spacing: 0.04em;
+	padding: 2px 6px;
+	border-radius: 999px;
+	background-color: var(--interactive-accent);
+	color: var(--text-on-accent);
+}
+
+.wrp-day-header-actions {
+	display: flex;
+	align-items: center;
+	gap: 2px;
+}
+
+/* Day Sections (Untimed & Timed) */
+.wrp-day-section {
+	display: flex;
+	flex-direction: column;
+	padding: 10px;
+	gap: 8px;
+	transition: background-color 0.12s ease;
+}
+
+.wrp-section-untimed {
+	border-bottom: 1px dashed var(--background-modifier-border);
+	min-height: 120px;
+}
+
+.wrp-section-timed {
+	flex: 1;
+	min-height: 160px;
+}
+
+.wrp-day-section.is-drag-over {
+	background-color: var(--background-modifier-hover);
+}
+
+.wrp-section-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+}
+
+.wrp-section-title-wrap {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	color: var(--text-muted);
+	font-size: 0.75rem;
+	font-weight: 600;
+	text-transform: uppercase;
+	letter-spacing: 0.03em;
+}
+
+.wrp-section-icon {
+	display: inline-flex;
+	align-items: center;
+}
+
+.wrp-section-icon svg {
+	width: 13px;
+	height: 13px;
+}
+
+.wrp-section-count {
+	font-size: 0.7rem;
+	padding: 1px 6px;
+	border-radius: 999px;
+	background-color: var(--background-primary);
+	color: var(--text-muted);
+	border: 1px solid var(--background-modifier-border);
+}
+
+.wrp-section-add-btn {
+	opacity: 0.65;
+	padding: 2px;
+}
+
+.wrp-section-add-btn:hover {
+	opacity: 1;
+}
+
+/* Cards List */
+.wrp-card-list {
+	display: flex;
+	flex-direction: column;
+	gap: 7px;
+	flex: 1;
+}
+
+.wrp-empty-slot {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 12px 8px;
+	border: 1px dashed var(--background-modifier-border);
+	border-radius: 7px;
+	color: var(--text-faint);
+	font-size: 0.76rem;
+	cursor: pointer;
+	transition: border-color 0.15s ease, color 0.15s ease;
+}
+
+.wrp-section-untimed .wrp-empty-slot {
+	flex: 1;
+}
+
+.wrp-empty-slot:hover {
+	border-color: var(--interactive-accent);
+	color: var(--text-muted);
+}
+
+/* Individual Routine Card */
+.wrp-card {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	gap: 5px;
+	padding: 9px 28px 9px 11px;
+	border-radius: 8px;
+	background-color: var(--background-primary);
+	border: 1px solid var(--background-modifier-border);
+	border-left: 4px solid var(--interactive-accent);
+	cursor: pointer;
+	transition: transform 0.1s ease, box-shadow 0.12s ease, border-color 0.12s ease;
+	position: relative;
+}
+
+.wrp-card:hover {
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.16);
+}
+
+.wrp-card.is-dragging {
+	opacity: 0.45;
+}
+
+/* Card Color Accents */
+.wrp-card-color-default {
+	border-left-color: var(--text-muted);
+}
+
+.wrp-card-color-blue {
+	border-left-color: var(--color-blue, #3b82f6);
+}
+
+.wrp-card-color-green {
+	border-left-color: var(--color-green, #22c55e);
+}
+
+.wrp-card-color-amber {
+	border-left-color: var(--color-orange, #f59e0b);
+}
+
+.wrp-card-color-red {
+	border-left-color: var(--color-red, #ef4444);
+}
+
+.wrp-card-color-purple {
+	border-left-color: var(--color-purple, #a855f7);
+}
+
+.wrp-card-color-teal {
+	border-left-color: var(--color-cyan, #14b8a6);
+}
+
+.wrp-card-top {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 4px;
+}
+
+.wrp-card-badges {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	flex-wrap: wrap;
+}
+
+.wrp-time-badge {
+	display: inline-flex;
+	align-items: center;
+	gap: 4px;
+	font-size: 0.75rem;
+	font-weight: 650;
+	padding: 2px 7px;
+	border-radius: 5px;
+	background-color: var(--background-secondary-alt);
+	color: var(--text-normal);
+	border: 1px solid var(--background-modifier-border);
+}
+
+.wrp-time-badge-icon {
+	display: inline-flex;
+	align-items: center;
+	color: var(--interactive-accent);
+}
+
+.wrp-time-badge-icon svg {
+	width: 11px;
+	height: 11px;
+}
+
+.wrp-category-badge {
+	font-size: 0.7rem;
+	font-weight: 500;
+	padding: 1px 6px;
+	border-radius: 5px;
+	background-color: var(--background-secondary-alt);
+	color: var(--text-muted);
+}
+
+.wrp-repeat-badge {
+	display: inline-flex;
+	align-items: center;
+	gap: 3px;
+	font-size: 0.7rem;
+	color: var(--text-muted);
+}
+
+.wrp-repeat-icon {
+	display: inline-flex;
+	align-items: center;
+}
+
+.wrp-repeat-icon svg {
+	width: 10px;
+	height: 10px;
+}
+
+.wrp-card-action-btn {
+	position: absolute;
+	top: 6px;
+	right: 6px;
+	padding: 2px;
+	height: 20px;
+	width: 20px;
+	opacity: 0;
+	transition: opacity 0.12s ease;
+}
+
+.wrp-card:hover .wrp-card-action-btn {
+	opacity: 0.85;
+}
+
+.wrp-card-action-btn:hover {
+	opacity: 1 !important;
+}
+
+.wrp-card-title {
+	font-size: 0.92rem;
+	font-weight: 600;
+	color: var(--text-normal);
+	line-height: 1.35;
+	word-break: break-word;
+}
+
+.wrp-card-notes {
+	font-size: 0.78rem;
+	color: var(--text-muted);
+	line-height: 1.35;
+	white-space: pre-wrap;
+	word-break: break-word;
+}
+
+/* Modal Styling */
+.wrp-modal .wrp-modal-title {
+	margin-top: 0;
+	margin-bottom: 12px;
+}
+
+.wrp-input-full {
+	width: 100%;
+}
+
+.wrp-modal-section {
+	margin-top: 14px;
+	margin-bottom: 14px;
+}
+
+.wrp-modal-label {
+	font-size: 0.9rem;
+	font-weight: 600;
+	margin-bottom: 4px;
+	color: var(--text-normal);
+}
+
+.wrp-modal-sublabel {
+	font-size: 0.78rem;
+	color: var(--text-muted);
+	margin-bottom: 8px;
+}
+
+.wrp-day-selector {
+	display: flex;
+	gap: 6px;
+	flex-wrap: wrap;
+}
+
+.wrp-day-pill {
+	flex: 1;
+	min-width: 44px;
+	padding: 6px 8px;
+	border-radius: 6px;
+	border: 1px solid var(--background-modifier-border);
+	background-color: var(--background-secondary);
+	color: var(--text-muted);
+	font-weight: 600;
+	font-size: 0.8rem;
+	cursor: pointer;
+}
+
+.wrp-day-pill.is-selected {
+	background-color: var(--interactive-accent);
+	color: var(--text-on-accent);
+	border-color: var(--interactive-accent);
+}
+
+.wrp-day-presets {
+	display: flex;
+	gap: 6px;
+	margin-top: 8px;
+	flex-wrap: wrap;
+}
+
+.wrp-preset-btn {
+	font-size: 0.74rem;
+	padding: 3px 8px;
+	height: auto;
+	cursor: pointer;
+}
+
+.wrp-time-fields-container {
+	padding: 10px 12px;
+	margin-bottom: 12px;
+	background-color: var(--background-secondary);
+	border-radius: 8px;
+	border: 1px solid var(--background-modifier-border);
+}
+
+.wrp-time-fields-container.is-hidden {
+	display: none;
+}
+
+.wrp-time-row {
+	display: flex;
+	gap: 16px;
+	flex-wrap: wrap;
+}
+
+.wrp-time-group {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+	flex: 1;
+	min-width: 130px;
+}
+
+.wrp-time-label {
+	font-size: 0.78rem;
+	font-weight: 600;
+	color: var(--text-muted);
+}
+
+.wrp-time-input {
+	padding: 6px 10px;
+	border-radius: 6px;
+	border: 1px solid var(--background-modifier-border);
+	background-color: var(--background-primary);
+	color: var(--text-normal);
+	font-family: var(--font-monospace);
+	font-size: 0.88rem;
+}
+
+.wrp-time-hint {
+	margin-top: 8px;
+	font-size: 0.74rem;
+	color: var(--text-muted);
+}
+
+.wrp-quick-times {
+	display: flex;
+	gap: 6px;
+	margin-top: 8px;
+	flex-wrap: wrap;
+}
+
+.wrp-time-chip {
+	font-family: var(--font-monospace);
+	font-size: 0.74rem;
+}
+
+.wrp-color-swatches {
+	display: flex;
+	gap: 6px;
+	flex-wrap: wrap;
+}
+
+.wrp-color-swatch {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	padding: 4px 10px;
+	border-radius: 6px;
+	border: 1px solid var(--background-modifier-border);
+	background-color: var(--background-secondary);
+	font-size: 0.76rem;
+	cursor: pointer;
+}
+
+.wrp-color-swatch::before {
+	content: "";
+	display: inline-block;
+	width: 10px;
+	height: 10px;
+	border-radius: 50%;
+	background-color: var(--text-muted);
+}
+
+.wrp-swatch-blue::before {
+	background-color: var(--color-blue, #3b82f6);
+}
+
+.wrp-swatch-green::before {
+	background-color: var(--color-green, #22c55e);
+}
+
+.wrp-swatch-amber::before {
+	background-color: var(--color-orange, #f59e0b);
+}
+
+.wrp-swatch-red::before {
+	background-color: var(--color-red, #ef4444);
+}
+
+.wrp-swatch-purple::before {
+	background-color: var(--color-purple, #a855f7);
+}
+
+.wrp-swatch-teal::before {
+	background-color: var(--color-cyan, #14b8a6);
+}
+
+.wrp-color-swatch.is-selected {
+	border-color: var(--interactive-accent);
+	box-shadow: 0 0 0 1px var(--interactive-accent);
+	font-weight: 600;
+}
+
+.wrp-notes-textarea {
+	width: 100%;
+	resize: vertical;
+	padding: 8px;
+	border-radius: 6px;
+	border: 1px solid var(--background-modifier-border);
+	background-color: var(--background-primary);
+	color: var(--text-normal);
+	font-family: inherit;
+}
+
+.wrp-modal-footer {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 8px;
+	margin-top: 18px;
+	padding-top: 12px;
+	border-top: 1px solid var(--background-modifier-border);
+	flex-wrap: wrap;
+}
+
+.wrp-modal-footer-left,
+.wrp-modal-footer-right {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+
+/* Mobile & Responsive Layout */
+@media (hover: none), (pointer: coarse) {
+	.wrp-card-action-btn {
+		opacity: 0.65;
+		width: 26px;
+		height: 26px;
+	}
+
+	.wrp-section-add-btn {
+		opacity: 0.9;
+		padding: 4px;
+	}
+}
+
+.wrp-is-mobile .wrp-card-action-btn {
+	opacity: 0.65;
+	width: 26px;
+	height: 26px;
+}
+
+@media (max-width: 760px) {
+	.wrp-view-container {
+		padding: 10px;
+	}
+
+	.wrp-toolbar {
+		padding-bottom: 10px;
+		margin-bottom: 10px;
+		gap: 8px;
+	}
+
+	.wrp-title {
+		font-size: 1.02rem;
+	}
+
+	.wrp-toolbar-controls {
+		width: 100%;
+		justify-content: space-between;
+	}
+
+	.wrp-day-strip {
+		display: grid;
+	}
+
+	/* On narrow/mobile screens:
+	   - Single day view stretches 100% width with natural auto section heights
+	   - All-days view stacks days vertically so you can scroll down the week effortlessly */
+	.wrp-board,
+	.wrp-board.wrp-board-single {
+		display: flex;
+		flex-direction: column;
+		gap: 12px;
+		overflow-x: hidden;
+		overflow-y: auto;
+	}
+
+	.wrp-day-column {
+		display: flex;
+		flex-direction: column;
+		min-height: auto;
+		flex-shrink: 0;
+	}
+
+	.wrp-section-untimed,
+	.wrp-section-timed {
+		min-height: auto;
+	}
+
+	.wrp-section-untimed .wrp-empty-slot {
+		flex: initial;
+	}
+
+	.wrp-card {
+		padding: 10px 32px 10px 12px;
+	}
+
+	.wrp-card-title {
+		font-size: 0.95rem;
+	}
+
+	.wrp-day-pill {
+		min-width: 38px;
+		padding: 8px 6px;
+	}
+
+	.wrp-modal-footer {
+		flex-direction: column-reverse;
+		align-items: stretch;
+	}
+
+	.wrp-modal-footer-left,
+	.wrp-modal-footer-right {
+		width: 100%;
+		justify-content: stretch;
+	}
+
+	.wrp-modal-footer-left button,
+	.wrp-modal-footer-right button {
+		flex: 1;
+	}
+}
