@@ -1,6 +1,6 @@
 {
 	"name": "weekly-routine-board",
-	"version": "1.0.1",
+	"version": "1.0.2",
 	"description": "Plan and view recurring weekly tasks and routines across all seven days with untimed day cards and timed schedule slots.",
 	"main": "main.js",
 	"scripts": {
