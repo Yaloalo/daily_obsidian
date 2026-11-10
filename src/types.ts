@@ -24,6 +24,7 @@ export interface RoutineCard {
 
 export interface WeeklyPlannerSettings {
 	cards: RoutineCard[];
+	notePath: string;
 	startWeekOnSunday: boolean;
 	use24HourFormat: boolean;
 	showWeekends: boolean;
@@ -59,6 +60,7 @@ export const CARD_COLORS: { value: CardColor; label: string }[] = [
 
 export const DEFAULT_SETTINGS: WeeklyPlannerSettings = {
 	cards: [],
+	notePath: "routines/weekly-routine.md",
 	startWeekOnSunday: false,
 	use24HourFormat: true,
 	showWeekends: true,

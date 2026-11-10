@@ -91,6 +91,24 @@
 	font-weight: 600;
 }
 
+.wrp-open-note-btn {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	cursor: pointer;
+	border: 1px solid var(--background-modifier-border);
+	background-color: var(--background-secondary);
+	color: var(--text-normal);
+	border-radius: var(--button-radius, 8px);
+	padding: 6px 12px;
+	font-size: 0.85rem;
+	font-weight: 500;
+}
+
+.wrp-open-note-btn:hover {
+	background-color: var(--background-modifier-hover);
+}
+
 .wrp-add-main-btn {
 	display: inline-flex;
 	align-items: center;

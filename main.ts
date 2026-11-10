@@ -1,4 +1,5 @@
-import { Plugin, WorkspaceLeaf } from "obsidian";
+import { normalizePath, Plugin, TFile, WorkspaceLeaf } from "obsidian";
+import { MarkdownRoutineRepository } from "./src/markdownStore";
 import { RoutineCardModal } from "./src/modals";
 import { WeeklyPlannerSettingTab } from "./src/settings";
 import {
@@ -15,8 +16,11 @@ import {
 
 export default class WeeklyRoutinePlannerPlugin extends Plugin {
 	settings: WeeklyPlannerSettings = DEFAULT_SETTINGS;
+	repo!: MarkdownRoutineRepository;
+	private isSaving = false;
 
 	async onload(): Promise<void> {
+		this.repo = new MarkdownRoutineRepository(this.app);
 		await this.loadSettings();
 
 		this.registerView(
@@ -41,6 +45,14 @@ export default class WeeklyRoutinePlannerPlugin extends Plugin {
 		});
 
 		this.addCommand({
+			id: "open-routines-markdown-note",
+			name: "Open routines markdown note",
+			callback: () => {
+				void this.openMarkdownNote();
+			},
+		});
+
+		this.addCommand({
 			id: "add-routine-card",
 			name: "Add routine card",
 			callback: () => {
@@ -55,6 +67,14 @@ export default class WeeklyRoutinePlannerPlugin extends Plugin {
 		});
 
 		this.addSettingTab(new WeeklyPlannerSettingTab(this.app, this));
+
+		this.registerEvent(
+			this.app.vault.on("modify", async (file) => {
+				if (!this.isSaving && file.path === normalizePath(this.settings.notePath)) {
+					await this.reloadFromMarkdown();
+				}
+			})
+		);
 	}
 
 	onunload(): void {
@@ -84,6 +104,17 @@ export default class WeeklyRoutinePlannerPlugin extends Plugin {
 		}
 	}
 
+	async openMarkdownNote(): Promise<void> {
+		const norm = normalizePath(this.settings.notePath);
+		const file = this.app.vault.getAbstractFileByPath(norm);
+		if (file instanceof TFile) {
+			const leaf = this.app.workspace.getLeaf(false);
+			if (leaf) {
+				await leaf.openFile(file);
+			}
+		}
+	}
+
 	refreshViews(): void {
 		const leaves = this.app.workspace.getLeavesOfType(
 			VIEW_TYPE_WEEKLY_PLANNER
@@ -92,6 +123,15 @@ export default class WeeklyRoutinePlannerPlugin extends Plugin {
 			if (leaf.view instanceof WeeklyPlannerView) {
 				leaf.view.render();
 			}
+		}
+	}
+
+	async reloadFromMarkdown(): Promise<void> {
+		const loadedCards = await this.repo.loadCards(this.settings.notePath);
+		if (loadedCards !== null) {
+			this.settings.cards = loadedCards;
+			await this.saveData(this.settings);
+			this.refreshViews();
 		}
 	}
 
@@ -134,12 +174,30 @@ export default class WeeklyRoutinePlannerPlugin extends Plugin {
 	async loadSettings(): Promise<void> {
 		const loaded = (await this.loadData()) as Partial<WeeklyPlannerSettings> | null;
 		this.settings = Object.assign({}, DEFAULT_SETTINGS, loaded);
+		if (!this.settings.notePath) {
+			this.settings.notePath = DEFAULT_SETTINGS.notePath;
+		}
 		if (!Array.isArray(this.settings.cards)) {
 			this.settings.cards = [];
+		}
+
+		// Try loading cards from the Markdown backend
+		const markdownCards = await this.repo.loadCards(this.settings.notePath);
+		if (markdownCards !== null) {
+			this.settings.cards = markdownCards;
+		} else {
+			// First run or migration: write cards to Markdown backend
+			await this.repo.saveCards(this.settings.notePath, this.settings.cards);
 		}
 	}
 
 	async saveSettings(): Promise<void> {
-		await this.saveData(this.settings);
+		this.isSaving = true;
+		try {
+			await this.repo.saveCards(this.settings.notePath, this.settings.cards);
+			await this.saveData(this.settings);
+		} finally {
+			this.isSaving = false;
+		}
 	}
 }

@@ -3,7 +3,7 @@ import type { SettingDefinitionItem } from "obsidian";
 import type WeeklyRoutinePlannerPlugin from "../main";
 import type { WeeklyPlannerSettings } from "./types";
 
-type ToggleKey = Exclude<keyof WeeklyPlannerSettings, "cards">;
+type ToggleKey = Exclude<keyof WeeklyPlannerSettings, "cards" | "notePath">;
 
 interface ToggleSettingSpec {
 	key: ToggleKey;
@@ -88,6 +88,22 @@ export class WeeklyPlannerSettingTab extends PluginSettingTab {
 	display(): void {
 		const { containerEl } = this;
 		containerEl.empty();
+
+		new Setting(containerEl)
+			.setName("Routines markdown note")
+			.setDesc("Path to the Markdown file used as the backend for your weekly routine cards.")
+			.addText((text) =>
+				text
+					.setPlaceholder("routines/weekly-routine.md")
+					.setValue(this.plugin.settings.notePath)
+					.onChange(async (val) => {
+						const trimmed = val.trim();
+						if (trimmed) {
+							this.plugin.settings.notePath = trimmed;
+							await this.plugin.saveSettings();
+						}
+					})
+			);
 
 		for (const spec of TOGGLE_SETTINGS) {
 			new Setting(containerEl)

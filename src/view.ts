@@ -113,6 +113,18 @@ export class WeeklyPlannerView extends ItemView {
 			this.render();
 		});
 
+		// Open Markdown note button
+		const noteBtn = controlsGroup.createEl("button", {
+			cls: "wrp-open-note-btn",
+			attr: { type: "button", title: `Open ${this.plugin.settings.notePath}` },
+		});
+		const noteBtnIcon = noteBtn.createSpan({ cls: "wrp-btn-icon" });
+		setIcon(noteBtnIcon, "file-text");
+		noteBtn.createSpan({ text: "Open note" });
+		noteBtn.addEventListener("click", () => {
+			void this.plugin.openMarkdownNote();
+		});
+
 		// Primary Add Card CTA button
 		const addBtn = controlsGroup.createEl("button", {
 			cls: "mod-cta wrp-add-main-btn",
