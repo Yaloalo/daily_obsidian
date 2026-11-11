@@ -1,5 +1,7 @@
 import esbuild from "esbuild";
 import process from "process";
+import { readFileSync } from "node:fs";
+import { compile, preprocess } from "svelte/compiler";
 import { builtinModules } from "node:module";
 
 const banner =
@@ -11,12 +13,49 @@ if you want to view the source, please visit the github repository of this plugi
 
 const prod = (process.argv[2] === "production");
 
+const sveltePlugin = {
+	name: "svelte5-esbuild",
+	setup(build) {
+		build.onLoad({ filter: /\.svelte$/ }, async (args) => {
+			const source = readFileSync(args.path, "utf8");
+			const preprocessed = await preprocess(source, {
+				script: async ({ content, attributes }) => {
+					if (attributes.lang === "ts") {
+						const res = await esbuild.transform(content, {
+							loader: "ts",
+							target: "es2020",
+							tsconfigRaw: {
+								compilerOptions: {
+									verbatimModuleSyntax: true
+								}
+							}
+						});
+						return { code: res.code };
+					}
+					return { code: content };
+				}
+			});
+			const compiled = compile(preprocessed.code, {
+				filename: args.path,
+				generate: "client",
+				css: "injected"
+			});
+			return {
+				contents: compiled.js.code,
+				loader: "js"
+			};
+		});
+	}
+};
+
 const context = await esbuild.context({
 	banner: {
 		js: banner,
 	},
 	entryPoints: ["main.ts"],
 	bundle: true,
+	plugins: [sveltePlugin],
+	conditions: ["svelte", "browser", "import", "default"],
 	external: [
 		"obsidian",
 		"electron",

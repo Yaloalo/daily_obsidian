@@ -26,8 +26,20 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Validate release version
+        run: node scripts/verify-release.mjs
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Test
+        run: npm test
+
       - name: Build plugin
         run: npm run build
+
+      - name: Smoke test release bundle
+        run: npm run smoke
 
       - name: Attest build provenance
         uses: actions/attest-build-provenance@v2
@@ -43,6 +55,7 @@ jobs:
           draft: false
           prerelease: false
           generate_release_notes: true
+          body_path: RELEASE_NOTES.md
           files: |
             main.js
             manifest.json

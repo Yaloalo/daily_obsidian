@@ -1,3 +1,5 @@
+import { DEFAULT_SETTINGS as DAY_CANVAS_DEFAULTS, type DayCanvasSettings } from "./dayCanvas/types";
+
 export type DayIndex = 0 | 1 | 2 | 3 | 4 | 5 | 6;
 
 export type CardColor =
@@ -23,6 +25,7 @@ export interface RoutineCard {
 }
 
 export interface WeeklyPlannerSettings {
+	dayCanvas: Omit<DayCanvasSettings, "routinesFilePath">;
 	cards: RoutineCard[];
 	notePath: string;
 	startWeekOnSunday: boolean;
@@ -59,6 +62,14 @@ export const CARD_COLORS: { value: CardColor; label: string }[] = [
 ];
 
 export const DEFAULT_SETTINGS: WeeklyPlannerSettings = {
+	dayCanvas: {
+		startHour: DAY_CANVAS_DEFAULTS.startHour,
+		endHour: DAY_CANVAS_DEFAULTS.endHour,
+		defaultDuration: DAY_CANVAS_DEFAULTS.defaultDuration,
+		storageMode: DAY_CANVAS_DEFAULTS.storageMode,
+		plansFolder: DAY_CANVAS_DEFAULTS.plansFolder,
+		dailyNotesFolder: DAY_CANVAS_DEFAULTS.dailyNotesFolder,
+	},
 	cards: [],
 	notePath: "routines/weekly-routine.md",
 	startWeekOnSunday: false,

@@ -87,6 +87,13 @@ export class WeeklyPlannerView extends ItemView {
 
 		const controlsGroup = toolbar.createDiv({ cls: "wrp-toolbar-controls" });
 
+		const dayCanvasBtn = controlsGroup.createEl("button", {
+			text: "Day canvas",
+			cls: "wrp-open-note-btn",
+			attr: { type: "button", title: "Plan today using your weekly routines" },
+		});
+		dayCanvasBtn.addEventListener("click", () => { void this.plugin.activateDayCanvas(); });
+
 		// Day filter pills (All days vs Today)
 		const filterBar = controlsGroup.createDiv({ cls: "wrp-filter-bar" });
 		const allBtn = filterBar.createEl("button", {

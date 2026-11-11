@@ -1,3 +1,6 @@
+import { DayCanvasItemView, DAY_CANVAS_VIEW_TYPE } from "./src/dayCanvas/view";
+import { DayPlanRepository } from "./src/dayCanvas/repository";
+import { normalizeDayCanvasSettings } from "./src/dayCanvas/settings";
 import { normalizePath, Plugin, TFile, WorkspaceLeaf } from "obsidian";
 import { MarkdownRoutineRepository } from "./src/markdownStore";
 import { RoutineCardModal } from "./src/modals";
@@ -17,11 +20,30 @@ import {
 export default class WeeklyRoutinePlannerPlugin extends Plugin {
 	settings: WeeklyPlannerSettings = DEFAULT_SETTINGS;
 	repo!: MarkdownRoutineRepository;
+	dayRepository!: DayPlanRepository;
 	private isSaving = false;
 
 	async onload(): Promise<void> {
 		this.repo = new MarkdownRoutineRepository(this.app);
 		await this.loadSettings();
+		this.dayRepository = new DayPlanRepository(this.app, () => ({
+			...this.settings.dayCanvas,
+			routinesFilePath: this.settings.notePath,
+		}));
+		this.registerView(DAY_CANVAS_VIEW_TYPE, leaf => new DayCanvasItemView(leaf, this));
+		this.addCommand({
+			id: "open-day-canvas",
+			name: "Open day canvas",
+			callback: () => { void this.activateDayCanvas(); },
+		});
+		const notifyDayPlan = (file: { path: string }): void => this.dayRepository.notify(file.path);
+		this.registerEvent(this.app.vault.on("modify", notifyDayPlan));
+		this.registerEvent(this.app.vault.on("create", notifyDayPlan));
+		this.registerEvent(this.app.vault.on("delete", notifyDayPlan));
+		this.registerEvent(this.app.vault.on("rename", (file, oldPath) => {
+			this.dayRepository.notify(oldPath);
+			this.dayRepository.notify(file.path);
+		}));
 
 		this.registerView(
 			VIEW_TYPE_WEEKLY_PLANNER,
@@ -79,6 +101,14 @@ export default class WeeklyRoutinePlannerPlugin extends Plugin {
 
 	onunload(): void {
 		// Obsidian restores leaf positions on reload; do not detach leaves here.
+	}
+
+	async activateDayCanvas(): Promise<void> {
+		const workspace = this.app.workspace;
+		const existing = workspace.getLeavesOfType(DAY_CANVAS_VIEW_TYPE)[0];
+		const leaf = existing ?? workspace.getLeaf(false);
+		if (!existing) await leaf.setViewState({ type: DAY_CANVAS_VIEW_TYPE, active: true });
+		await workspace.revealLeaf(leaf);
 	}
 
 	async activateView(): Promise<void> {
@@ -174,6 +204,17 @@ export default class WeeklyRoutinePlannerPlugin extends Plugin {
 	async loadSettings(): Promise<void> {
 		const loaded = (await this.loadData()) as Partial<WeeklyPlannerSettings> | null;
 		this.settings = Object.assign({}, DEFAULT_SETTINGS, loaded);
+		let daySettings: unknown = loaded?.dayCanvas;
+		if (!daySettings) {
+			// Adopt existing standalone settings once; its Markdown plans keep their paths.
+			const legacyPath = normalizePath(`${this.app.vault.configDir}/plugins/day-canvas/data.json`);
+			try {
+				if (await this.app.vault.adapter.exists(legacyPath)) {
+					daySettings = JSON.parse(await this.app.vault.adapter.read(legacyPath));
+				}
+			} catch { /* Missing or invalid legacy settings leave the defaults in place. */ }
+		}
+		this.settings.dayCanvas = normalizeDayCanvasSettings(daySettings);
 		if (!this.settings.notePath) {
 			this.settings.notePath = DEFAULT_SETTINGS.notePath;
 		}
@@ -189,6 +230,7 @@ export default class WeeklyRoutinePlannerPlugin extends Plugin {
 			// First run or migration: write cards to Markdown backend
 			await this.repo.saveCards(this.settings.notePath, this.settings.cards);
 		}
+		await this.saveData(this.settings);
 	}
 
 	async saveSettings(): Promise<void> {
@@ -196,6 +238,7 @@ export default class WeeklyRoutinePlannerPlugin extends Plugin {
 		try {
 			await this.repo.saveCards(this.settings.notePath, this.settings.cards);
 			await this.saveData(this.settings);
+			this.dayRepository?.notify();
 		} finally {
 			this.isSaving = false;
 		}
